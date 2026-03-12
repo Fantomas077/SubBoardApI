@@ -1,0 +1,6 @@
+@SubBoard_HostAddress = http://localhost:5080
+
+GET {{SubBoard_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

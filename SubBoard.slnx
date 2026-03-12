@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SubBoard.Infrastructure/SubBoard.Infrastructure.csproj" />
+  <Project Path="SubBoard/SubBoard.Api.csproj" />
+  <Project Path="SubBord.Application/SubBoard.Application.csproj" />
+  <Project Path="SubBord.Domain/SubBoard.Domain.csproj" />
+</Solution>
