@@ -12,6 +12,6 @@ namespace SubBoard.Domain.Entities
         [Required]
         public string Name { get; set; } 
         public string? Icon { get; set; }
-
+        public List<Subscription> Subscriptions { get; set; }
     }
 }

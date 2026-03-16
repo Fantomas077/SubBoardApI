@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="SubBoard.Blazor/SubBoard.Blazor.csproj" Id="abbac486-44c9-44df-9d10-d449dca423b9" />
   <Project Path="SubBoard.Infrastructure/SubBoard.Infrastructure.csproj" />
   <Project Path="SubBoard/SubBoard.Api.csproj" />
   <Project Path="SubBord.Application/SubBoard.Application.csproj" />
