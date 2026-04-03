@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SubBoard.Api.Dtos;
+using SubBoard.Api.Dtos.Category;
 using SubBoard.Infrastructure.Data;
 
 namespace SubBoard.Api.Controllers
@@ -36,20 +36,19 @@ namespace SubBoard.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var c = await _db.Category
-                .Where(x => x.Id == id)
-                .Select(c => new CategoryDto
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Icon = c.Icon
-                })
-                .FirstOrDefaultAsync();
-
-            if (c == null)
+            var category = await _db.Category.FindAsync(id);
+            if(category==null)
+            {
                 return NotFound();
+            }
+            CategoryDto categoryDto = new CategoryDto()
+            {
+                Id=category.Id,
+                Name = category.Name,
+                Icon= category.Icon
 
-            return Ok(c);
+            };
+            return Ok(categoryDto);
         }
 
         // POST

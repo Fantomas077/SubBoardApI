@@ -1,0 +1,92 @@
+﻿@page "/categories"
+@using SubBoard.Blazor.Services
+@using SubBoard.Domain.Entities
+@inject CategoryService CategoryService
+
+@if (_isLoading)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else
+{
+
+    <div class="card shadow border-0 mt-4">
+        <div class="card-header bg-black bg-gradient m-l-0 py-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <h2 class="text-white py-2">Category List</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row pb-3">
+                <div class="col-12 text-end">
+                    <a href="/category/create" class="btn btn-secondary" style="width:200px"><i class="bi bi-plus-circle"></i> Add New Category</a>
+                </div>
+
+            </div>
+            @if (_categories.Any())
+            {
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Icon</th>
+
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in _categories)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Icon</td>
+
+                                <td>
+                                    <a href="/category/update/@item.Id" class="btn btn-primary"><i class="bi bi-pencil"></i> Edit</a>
+                                    <button class="btn btn-danger" @onclick="() => DeleteCategory(item.Id)"><i class="bi bi-trash-fill"></i> Delete</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+
+            }
+            else
+            {
+                <p>No Category For the moment</p>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<Category> _categories = new();
+    private bool _isLoading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadCategories();
+    }
+
+    private async Task LoadCategories()
+    {
+        _isLoading = true;
+        _categories = await CategoryService.GetAllAsync();
+        _isLoading = false;
+    }
+
+    
+
+    private async Task DeleteCategory(int id)
+    {
+        var success = await CategoryService.DeleteAsync(id);
+        if (success)
+            await LoadCategories();
+    }
+}

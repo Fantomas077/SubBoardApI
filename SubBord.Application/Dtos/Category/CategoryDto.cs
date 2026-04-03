@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace SubBoard.Api.Dtos
+namespace SubBoard.Api.Dtos.Category
 {
     public class CategoryDto
     {

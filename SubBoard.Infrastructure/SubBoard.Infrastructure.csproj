@@ -22,4 +22,9 @@
     <ProjectReference Include="..\SubBord.Domain\SubBoard.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+    <Folder Include="Repositories\" />
+  </ItemGroup>
+
 </Project>

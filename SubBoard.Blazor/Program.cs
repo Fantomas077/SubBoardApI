@@ -1,10 +1,24 @@
 using SubBoard.Blazor.Components;
+using SubBoard.Blazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+builder.Services.AddHttpClient("SubBoardApi", client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7111/");
+    client.DefaultRequestHeaders.Add("Accept", "application/json");
+});
+// Inject HttpClient directly
+builder.Services.AddScoped(sp =>
+    sp.GetRequiredService<IHttpClientFactory>().CreateClient("SubBoardApi"));
+
+// Register CategoryService
+builder.Services.AddScoped<CategoryService>();
+
+
 
 var app = builder.Build();
 
