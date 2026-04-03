@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SubBoard.Api.Dtos;
+using SubBoard.Application.Dtos;
 using SubBoard.Domain.Entities;
 using SubBoard.Infrastructure.Data;
 

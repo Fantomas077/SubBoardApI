@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\SubBord.Application\SubBoard.Application.csproj" />
     <ProjectReference Include="..\SubBord.Domain\SubBoard.Domain.csproj" />
   </ItemGroup>
 

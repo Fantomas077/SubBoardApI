@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SubBoard.Application.Mappings;
 using SubBoard.Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+MapsterConfig.RegisterMappings();
+
 
 var app = builder.Build();
 

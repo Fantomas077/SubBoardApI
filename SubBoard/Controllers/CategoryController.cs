@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SubBoard.Api.Dtos.Category;
+using SubBoard.Application.Dtos.Category;
 using SubBoard.Infrastructure.Data;
 
 namespace SubBoard.Api.Controllers

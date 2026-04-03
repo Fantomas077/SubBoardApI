@@ -1,6 +1,6 @@
 ﻿using SubBoard.Domain.Entities;
 
-namespace SubBoard.Api.Dtos
+namespace SubBoard.Application.Dtos
 {
     public class SubscriptionDto
     {
