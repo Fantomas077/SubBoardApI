@@ -1,0 +1,110 @@
+﻿@page "/subscription/create"
+@using SubBoard.Application.Dtos.Subscription
+@using SubBoard.Application.Dtos.Category
+@using SubBoard.Blazor.Services
+@using SubBoard.Domain.Entities
+@inject SubscriptionService _SubService
+@inject CategoryService _CategoryService
+@inject NavigationManager _Nav
+
+<div class="card shadow border-0 mt-4">
+    <div class="card-header bg-black bg-gradient py-3">
+        <h2 class="text-white text-center">Create Subscription</h2>
+    </div>
+
+    <div class="card-body p-4">
+        <EditForm Model="form" OnValidSubmit="Submit">
+            <DataAnnotationsValidator />
+            <ValidationSummary />
+
+            <div class="border p-3 mt-4">
+
+                <!-- Name -->
+                <div class="form-floating py-3 col-12">
+                    <InputText class="form-control" @bind-Value="form.Name" />
+                    <label>Name</label>
+                    <ValidationMessage For="() => form.Name" />
+                </div>
+
+                <!-- Price -->
+                <div class="form-floating py-3 col-12">
+                    <InputNumber class="form-control" @bind-Value="form.Price" />
+                    <label>Price</label>
+                    <ValidationMessage For="() => form.Price" />
+                </div>
+
+                <!-- Frequency -->
+                <div class="form-floating py-3 col-12">
+                    <InputSelect class="form-control" @bind-Value="form.Frequency">
+                        <option value="">Select Frequency</option>
+                        @foreach (var freq in Enum.GetValues<Frequency>())
+                        {
+                            <option value="@freq">@freq</option>
+                        }
+                    </InputSelect>
+                    <label>Frequency</label>
+                </div>
+
+                <!-- Renew Date -->
+                <div class="form-floating py-3 col-12">
+                    <InputDate class="form-control" @bind-Value="form.RenewDate" />
+                    <label>Renew Date</label>
+                    <ValidationMessage For="() => form.RenewDate" />
+                </div>
+
+                <!-- Status -->
+                <div class="form-floating py-3 col-12">
+                    <InputSelect class="form-control" @bind-Value="form.Status">
+                        <option value="">Select Status</option>
+                        @foreach (var status in Enum.GetValues<Status>())
+                        {
+                            <option value="@status">@status</option>
+                        }
+                    </InputSelect>
+                    <label>Status</label>
+                </div>
+
+                <!-- Category -->
+                <div class="form-floating py-3 col-12">
+                    <InputSelect class="form-control" @bind-Value="form.CategoryId">
+                        <option value="">Select Category</option>
+                        @foreach (var cat in Categories)
+                        {
+                            <option value="@cat.Id">@cat.Name</option>
+                        }
+                    </InputSelect>
+                    <label>Category</label>
+                </div>
+
+                <div class="d-flex gap-3 p-4">
+                    <button type="submit" class="btn btn-primary" disabled="@IsProcessing">
+                        <i class="bi bi-save2-fill"></i> @(IsProcessing ? "Processing..." : "Create")
+                    </button>
+
+                    <a href="/subscription" class="btn btn-secondary">
+                        <i class="bi bi-skip-backward-fill"></i> Back to Subscription
+                    </a>
+                </div>
+
+            </div>
+        </EditForm>
+    </div>
+</div>
+
+@code {
+    private bool IsProcessing;
+    public CreateSubscriptionDto form = new();
+    private List<CategoryDto> Categories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = await _CategoryService.GetAllAsync();
+    }
+
+    private async Task Submit()
+    {
+        IsProcessing = true;
+        await _SubService.CreateAsync(form);
+        _Nav.NavigateTo("/subscription");
+    }
+}

@@ -1,0 +1,38 @@
+﻿@page "/dashboard"
+@using SubBoard.Application.Dtos.Dashboard
+@inject DashboardService DashboardService
+
+<h3>Dashboard</h3>
+
+@if (data == null)
+{
+    <p>Chargement...</p>
+}
+else
+{
+    <p>Total mensuel : @data.TotalMonthly €</p>
+    <p>Total annuel : @data.TotalYearly €</p>
+    <p>Actifs : @data.ActiveSubscriptions</p>
+    <p>Inactifs : @data.InactiveSubscriptions</p>
+
+    <h4>Total par catégorie</h4>
+    @foreach (var item in data.TotalByCategory)
+    {
+        <p>@item.Category : @item.Total €</p>
+    }
+
+    <h4>Dépenses mensuelles</h4>
+    @foreach (var item in data.MonthlySpending)
+    {
+        <p>@item.Month : @item.Total €</p>
+    }
+}
+
+@code {
+    private DashboardDto data;
+
+    protected override async Task OnInitializedAsync()
+    {
+        data = await DashboardService.GetDashboard();
+    }
+}

@@ -1,7 +1,9 @@
 ﻿@page "/categories"
+@using SubBoard.Application.Dtos.Category
 @using SubBoard.Blazor.Services
 @using SubBoard.Domain.Entities
 @inject CategoryService CategoryService
+@inject ISnackbar Snackbar
 
 @if (_isLoading)
 {
@@ -66,7 +68,7 @@ else
 }
 
 @code {
-    private List<Category> _categories = new();
+    private List<CategoryDto> _categories = new();
     private bool _isLoading = true;
 
     protected override async Task OnInitializedAsync()
@@ -81,12 +83,13 @@ else
         _isLoading = false;
     }
 
-    
+
 
     private async Task DeleteCategory(int id)
     {
         var success = await CategoryService.DeleteAsync(id);
         if (success)
-            await LoadCategories();
+            Snackbar.Add("Category deleted successfully ", Severity.Warning);
+        await LoadCategories();
     }
 }

@@ -1,0 +1,136 @@
+﻿@page "/subscription/update/{id:int}"
+@using SubBoard.Application.Dtos.Subscription
+@using SubBoard.Application.Dtos.Category
+@using SubBoard.Blazor.Services
+@using SubBoard.Domain.Entities
+@inject SubscriptionService SubscriptionService
+@inject CategoryService CategoryService
+@inject NavigationManager Nav
+
+<h3>Update Subscription</h3>
+
+@if (isLoading)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border text-primary"></div>
+    </div>
+}
+else
+{
+    <EditForm Model="form" OnValidSubmit="Submit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="border p-3 mt-4">
+
+            <!-- Name -->
+            <div class="form-floating py-3 col-12">
+                <InputText class="form-control" @bind-Value="form.Name" />
+                <label>Name</label>
+                <ValidationMessage For="() => form.Name" />
+            </div>
+
+            <!-- Price -->
+            <div class="form-floating py-3 col-12">
+                <InputNumber class="form-control" @bind-Value="form.Price" />
+                <label>Price</label>
+                <ValidationMessage For="() => form.Price" />
+            </div>
+
+            <!-- Frequency -->
+            <div class="form-floating py-3 col-12">
+                <InputSelect class="form-control" @bind-Value="form.Frequency">
+                    @foreach (var freq in Enum.GetValues<Frequency>())
+                    {
+                        <option value="@freq">@freq</option>
+                    }
+                </InputSelect>
+                <label>Frequency</label>
+            </div>
+
+            <!-- Renew Date -->
+            <div class="form-floating py-3 col-12">
+                <InputDate class="form-control" @bind-Value="form.RenewDate" />
+                <label>Renew Date</label>
+                <ValidationMessage For="() => form.RenewDate" />
+            </div>
+
+            <!-- Status -->
+            <div class="form-floating py-3 col-12">
+                <InputSelect class="form-control" @bind-Value="form.Status">
+                    @foreach (var status in Enum.GetValues<Status>())
+                    {
+                        <option value="@status">@status</option>
+                    }
+                </InputSelect>
+                <label>Status</label>
+            </div>
+
+            <!-- Category -->
+            <div class="form-floating py-3 col-12">
+                <InputSelect class="form-control" @bind-Value="form.CategoryId">
+                    @foreach (var cat in categories)
+                    {
+                        <option value="@cat.Id">@cat.Name</option>
+                    }
+                </InputSelect>
+                <label>Category</label>
+            </div>
+
+            <div class="d-flex gap-3 p-4">
+                <button type="submit" class="btn btn-primary" disabled="@isProcessing">
+                    <i class="bi bi-save2-fill"></i> @(isProcessing ? "Processing..." : "Update")
+                </button>
+
+                <a href="/subscription" class="btn btn-secondary">
+                    <i class="bi bi-skip-backward-fill"></i> Back
+                </a>
+            </div>
+
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int id { get; set; }
+
+    private bool isLoading = true;
+    private bool isProcessing = false;
+
+    public UpdateSubscriptionDto form = new();
+    private List<CategoryDto> categories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Charger les catégories
+        categories = await CategoryService.GetAllAsync();
+
+        // Charger la subscription existante
+        var dto = await SubscriptionService.GetByIdAsync(id);
+
+        if (dto != null)
+        {
+            form = new UpdateSubscriptionDto
+            {
+                Id = dto.Id,
+                Name = dto.Name,
+                Price = dto.Price,
+                Frequency = dto.Frequency,
+                RenewDate = dto.RenewDate,
+                Status = dto.Status,
+                CategoryId = dto.CategoryId
+            };
+        }
+
+        isLoading = false;
+    }
+
+    private async Task Submit()
+    {
+        isProcessing = true;
+
+        await SubscriptionService.UpdateAsync(form);
+
+        Nav.NavigateTo("/subscription");
+    }
+}

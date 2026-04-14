@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using SubBoard.Application.Dtos.Category;
-using SubBoard.Infrastructure.Data;
+using SubBoard.Application.Services;
 
 namespace SubBoard.Api.Controllers
 {
@@ -9,26 +8,18 @@ namespace SubBoard.Api.Controllers
     [ApiController]
     public class CategoryController : ControllerBase
     {
-        private readonly AppDbContext _db;
+        private readonly ICategoryService _service;
 
-        public CategoryController(AppDbContext db)
+        public CategoryController(ICategoryService service)
         {
-            _db = db;
+            _service = service;
         }
 
         // GET ALL
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var categories = await _db.Category
-                .Select(c => new CategoryDto
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    Icon = c.Icon
-                })
-                .ToListAsync();
-
+            var categories = await _service.GetAllAsync();
             return Ok(categories);
         }
 
@@ -36,67 +27,32 @@ namespace SubBoard.Api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var category = await _db.Category.FindAsync(id);
-            if(category==null)
-            {
-                return NotFound();
-            }
-            CategoryDto categoryDto = new CategoryDto()
-            {
-                Id=category.Id,
-                Name = category.Name,
-                Icon= category.Icon
-
-            };
-            return Ok(categoryDto);
+            var category = await _service.GetByIdAsync(id);
+            return Ok(category);
         }
 
         // POST
         [HttpPost]
-        public async Task<IActionResult> Add(CategoryDto dto)
+        public async Task<IActionResult> Add([FromBody] CreateCategoryDto dto)
         {
-            var category = new SubBoard.Domain.Entities.Category
-            {
-                Name = dto.Name,
-                Icon = dto.Icon
-            };
-
-            await _db.Category.AddAsync(category);
-            await _db.SaveChangesAsync();
-
-            dto.Id = category.Id;
-
-            return Ok(dto);
+            await _service.AddAsync(dto);
+            return Ok(new { message = "Category created successfully" });
         }
 
         // PUT
         [HttpPut]
-        public async Task<IActionResult> Update(CategoryDto dto)
+        public async Task<IActionResult> Update([FromBody] UpdateCategoryDto dto)
         {
-            var existing = await _db.Category.FirstOrDefaultAsync(c => c.Id == dto.Id);
-            if (existing == null)
-                return NotFound();
-
-            existing.Name = dto.Name;
-            existing.Icon = dto.Icon;
-
-            await _db.SaveChangesAsync();
-
-            return Ok(dto);
+            await _service.UpdateAsync(dto);
+            return Ok(new { message = "Category updated successfully" });
         }
 
         // DELETE
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _db.Category.FirstOrDefaultAsync(c => c.Id == id);
-            if (existing == null)
-                return NotFound();
-
-            _db.Category.Remove(existing);
-            await _db.SaveChangesAsync();
-
-            return Ok();
+            await _service.DeleteAsync(id);
+            return Ok(new { message = "Category deleted successfully" });
         }
     }
 }

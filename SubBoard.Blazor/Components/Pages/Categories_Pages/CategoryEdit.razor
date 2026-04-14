@@ -1,9 +1,9 @@
 ﻿@page "/category/update/{id:int}"
+@using SubBoard.Application.Dtos.Category
 @using SubBoard.Blazor.Services
-@using SubBoard.Domain.Entities
 @inject CategoryService CategoryService
 @inject NavigationManager _Nav
-
+@inject ISnackbar Snackbar
 <div class="card shadow border-0 mt-4">
     <div class="card-header bg-black bg-gradient py-3">
         <h2 class="text-white text-center">Update Category</h2>
@@ -15,14 +15,15 @@
             <ValidationSummary />
 
             <div class="border p-3 mt-4">
+
                 <div class="form-floating py-3 col-12">
-                    <InputText class="form-control" @bind-Value="form.Name" id="Name" />
+                    <InputText class="form-control" @bind-Value="form.Name" />
                     <label>Name</label>
                     <ValidationMessage For="() => form.Name" />
                 </div>
 
                 <div class="form-floating py-3 col-12">
-                    <InputText class="form-control" @bind-Value="form.Icon" id="Icon" />
+                    <InputText class="form-control" @bind-Value="form.Icon" />
                     <label>Emoji</label>
                     <ValidationMessage For="() => form.Icon" />
                 </div>
@@ -36,6 +37,7 @@
                         <i class="bi bi-skip-backward-fill"></i> Back to Category
                     </a>
                 </div>
+
             </div>
         </EditForm>
     </div>
@@ -45,18 +47,27 @@
     [Parameter] public int id { get; set; }
 
     private bool IsProcessing;
-    public Category form = new Category();
+    public UpdateCategoryDto form = new();
 
     protected override async Task OnInitializedAsync()
     {
-        form = await CategoryService.GetByIdAsync(id);
+        var dto = await CategoryService.GetByIdAsync(id);
+
+        form = new UpdateCategoryDto
+        {
+            Id = dto.Id,
+            Name = dto.Name,
+            Icon = dto.Icon
+        };
     }
 
     private async Task Submit()
     {
         IsProcessing = true;
 
-        await CategoryService.UpdateAsync( form);
+        await CategoryService.UpdateAsync(form);
+        Snackbar.Add("Category updated successfully!", Severity.Success);
+
 
         _Nav.NavigateTo("/categories");
     }

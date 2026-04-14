@@ -1,6 +1,10 @@
 ﻿@page "/category/create"
+@using SubBoard.Application.Dtos.Category
 @using SubBoard.Blazor.Services
 @using SubBoard.Domain.Entities
+@using MudBlazor
+@inject ISnackbar Snackbar
+
 @inject CategoryService CategoryService
 @inject NavigationManager _Nav
 
@@ -48,13 +52,16 @@
 
 @code {
     private bool IsProcessing;
-    public Category form = new Category(); 
+    public CreateCategoryDto form = new (); 
+  
+
 
     private async Task Submit()
     {
         IsProcessing = true;
         await Task.Delay(1000);
         await CategoryService.CreateAsync(form);
+        Snackbar.Add("Category created successfully!", Severity.Success);
         _Nav.NavigateTo("/categories");
 
     }

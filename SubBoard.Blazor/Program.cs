@@ -1,3 +1,4 @@
+using MudBlazor.Services;
 using SubBoard.Blazor.Components;
 using SubBoard.Blazor.Services;
 
@@ -17,6 +18,10 @@ builder.Services.AddScoped(sp =>
 
 // Register CategoryService
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<SubscriptionService>();
+builder.Services.AddScoped<DashboardService>();
+
+builder.Services.AddMudServices();
 
 
 

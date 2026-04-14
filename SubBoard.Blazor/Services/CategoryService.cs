@@ -1,5 +1,5 @@
 ﻿using System.Net.Http.Json;
-using SubBoard.Domain.Entities;
+using SubBoard.Application.Dtos.Category;
 
 namespace SubBoard.Blazor.Services
 {
@@ -12,26 +12,26 @@ namespace SubBoard.Blazor.Services
             _http = http;
         }
 
-        public async Task<List<Category>> GetAllAsync()
+        public async Task<List<CategoryDto>> GetAllAsync()
         {
-            return await _http.GetFromJsonAsync<List<Category>>("api/category")
-                   ?? new List<Category>();
+            return await _http.GetFromJsonAsync<List<CategoryDto>>("api/category")
+                   ?? new List<CategoryDto>();
         }
 
-        public async Task<Category?> GetByIdAsync(int id)
+        public async Task<CategoryDto?> GetByIdAsync(int id)
         {
-            return await _http.GetFromJsonAsync<Category>($"api/category/{id}");
+            return await _http.GetFromJsonAsync<CategoryDto>($"api/category/{id}");
         }
 
-        public async Task<bool> CreateAsync(Category category)
+        public async Task<bool> CreateAsync(CreateCategoryDto dto)
         {
-            var response = await _http.PostAsJsonAsync("api/category", category);
+            var response = await _http.PostAsJsonAsync("api/category", dto);
             return response.IsSuccessStatusCode;
         }
 
-        public async Task<bool> UpdateAsync( Category category)
+        public async Task<bool> UpdateAsync(UpdateCategoryDto dto)
         {
-            var response = await _http.PutAsJsonAsync($"api/category/{category.Id}", category);
+            var response = await _http.PutAsJsonAsync("api/category", dto);
             return response.IsSuccessStatusCode;
         }
 

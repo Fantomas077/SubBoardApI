@@ -12,6 +12,7 @@ namespace SubBoard.Application.Dtos.Subscription
         public Status Status { get; set; }
         public int CategoryId { get; set; }
         public string CategoryName { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     }
 }

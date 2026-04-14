@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using SubBoard.Application.Dtos;
-using SubBoard.Domain.Entities;
-using SubBoard.Infrastructure.Data;
+﻿using Microsoft.AspNetCore.Mvc;
+using SubBoard.Application.Dtos.Subscription;
+using SubBoard.Application.Services;
 
 namespace SubBoard.Api.Controllers
 {
@@ -11,131 +8,52 @@ namespace SubBoard.Api.Controllers
     [ApiController]
     public class SubscriptionController : ControllerBase
     {
-        private readonly AppDbContext _db;
-        public SubscriptionController(AppDbContext db)
+        private readonly ISubscriptionService _serv;
+
+        public SubscriptionController(ISubscriptionService serv)
         {
-            _db = db;
+            _serv = serv;
         }
+
+        // GET: api/subscription
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var subs = await _db.Subscriptions
-                .Include(c => c.Category)
-                .Select(s => new SubscriptionDto
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    Price = s.Price,
-                    Frequency = s.Frequency,
-                    RenewDate = s.RenewDate,
-                    Status = s.Status,
-                    CategoryId = s.CategoryId,
-                    CategoryName = s.Category.Name
-                })
-                .ToListAsync();
-
-            return Ok(subs);
+            var subscriptions = await _serv.GetAllAsync();
+            return Ok(subscriptions);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> AddSubscription(Subscription subscription)
-        {
-            var category = await _db.Category.FirstOrDefaultAsync(r => r.Id == subscription.CategoryId);
-            if (category == null)
-            {
-                return BadRequest("Category not valid");
-            }
-
-            await _db.Subscriptions.AddAsync(subscription);
-            await _db.SaveChangesAsync();
-
-            // Convertir en DTO
-            var dto = new SubscriptionDto
-            {
-                Id = subscription.Id,
-                Name = subscription.Name,
-                Price = subscription.Price,
-                Frequency = subscription.Frequency,
-                RenewDate = subscription.RenewDate,
-                Status = subscription.Status,
-                CategoryId = subscription.CategoryId,
-                CategoryName = category.Name
-            };
-
-            return Ok(dto);
-        }
-
+        // GET: api/subscription/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var s = await _db.Subscriptions
-                .Include(c => c.Category)
-                .Where(x => x.Id == id)
-                .Select(s => new SubscriptionDto
-                {
-                    Id = s.Id,
-                    Name = s.Name,
-                    Price = s.Price,
-                    Frequency = s.Frequency,
-                    RenewDate = s.RenewDate,
-                    Status = s.Status,
-                    CategoryId = s.CategoryId,
-                    CategoryName = s.Category.Name
-                })
-                .FirstOrDefaultAsync();
-
-            if (s == null)
-                return NotFound();
-
-            return Ok(s);
+            var subscription = await _serv.GetById(id);
+            
+            return Ok(subscription);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update(Subscription subscription)
+        // POST: api/subscription
+        [HttpPost]
+        public async Task<IActionResult> AddSubscription([FromBody] CreateSubscriptionDto dto)
         {
-            var existing = await _db.Subscriptions.FirstOrDefaultAsync(r => r.Id == subscription.Id);
-            if (existing == null)
-            {
-                return NotFound();
-            }
-
-            existing.Name = subscription.Name;
-            existing.Price = subscription.Price;
-            existing.Status = subscription.Status;
-            existing.Frequency = subscription.Frequency;
-            existing.RenewDate = subscription.RenewDate;
-            existing.CategoryId = subscription.CategoryId;
-
-            await _db.SaveChangesAsync();
-
-            var category = await _db.Category.FirstOrDefaultAsync(c => c.Id == existing.CategoryId);
-
-            var dto = new SubscriptionDto
-            {
-                Id = existing.Id,
-                Name = existing.Name,
-                Price = existing.Price,
-                Frequency = existing.Frequency,
-                RenewDate = existing.RenewDate,
-                Status = existing.Status,
-                CategoryId = existing.CategoryId,
-                CategoryName = category?.Name
-            };
-
-            return Ok(dto);
+            await _serv.AddAsync(dto);
+            return Ok(new { message = "Subscription created successfully" });
         }
 
+        // PUT: api/subscription
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] UpdateSubscriptionDto dto)
+        {
+            await _serv.UpdateAsync(dto);
+            return Ok(new { message = "Subscription updated successfully" });
+        }
+
+        // DELETE: api/subscription/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var existing = await _db.Subscriptions.FirstOrDefaultAsync(r => r.Id == id);
-            if (existing == null)
-            {
-                return NotFound();
-            }
-            _db.Subscriptions.Remove(existing);
-            await _db.SaveChangesAsync();
-            return Ok();
+            await _serv.DeleteAsync(id);
+            return Ok(new { message = "Subscription deleted successfully" });
         }
     }
 }

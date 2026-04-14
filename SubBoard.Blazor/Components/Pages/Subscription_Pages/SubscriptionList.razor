@@ -1,0 +1,98 @@
+﻿@page "/subscription"
+@using SubBoard.Application.Dtos.Subscription
+@using SubBoard.Blazor.Services
+@inject SubscriptionService _SubscriptionService
+
+@if (_isLoading)
+{
+    <div class="text-center mt-5">
+        <div class="spinner-border text-primary" role="status"></div>
+    </div>
+}
+else
+{
+    <div class="card shadow border-0 mt-4">
+        <div class="card-header bg-black bg-gradient py-3">
+            <h2 class="text-white text-center">Subscription List</h2>
+        </div>
+
+        <div class="card-body p-4">
+            <div class="row pb-3">
+                <div class="col-12 text-end">
+                    <a href="/subscription/create" class="btn btn-secondary" style="width:200px">
+                        <i class="bi bi-plus-circle"></i> Add New Subscription
+                    </a>
+                </div>
+            </div>
+
+            @if (Sub.Any())
+            {
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Frequency</th>
+                            <th>Renew Date</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Category</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @foreach (var item in Sub)
+                        {
+                            <tr>
+                                <td>@item.Name</td>
+                                <td>@item.Price</td>
+                                <td>@item.Frequency</td>
+                                <td>@item.RenewDate</td>
+                                <td>@item.Status</td>
+                                <td>@item.CreatedAt</td>
+                                <td>@item.CategoryName</td>
+
+                                <td>
+                                    <a href="/subscription/update/@item.Id" class="btn btn-primary">
+                                        <i class="bi bi-pencil"></i> Edit
+                                    </a>
+                                    <button class="btn btn-danger" @onclick="() => DeleteSubscription(item.Id)">
+                                        <i class="bi bi-trash-fill"></i> Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>No subscriptions for the moment</p>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private bool _isLoading = true;
+    private List<SubscriptionDto> Sub = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSubscriptions();
+        _isLoading = false;
+    }
+
+    private async Task LoadSubscriptions()
+    {
+        Sub = await _SubscriptionService.GetAllAsync();
+    }
+
+    private async Task DeleteSubscription(int id)
+    {
+        var success = await _SubscriptionService.DeleteAsync(id);
+        if (success)
+            await LoadSubscriptions();
+    }
+}
