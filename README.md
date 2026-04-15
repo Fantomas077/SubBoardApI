@@ -3,4 +3,4 @@ SubBoard ist eine moderne Full‑Stack‑Anwendung zur Verwaltung, Analyse und V
 Das Projekt besteht aus zwei klar getrennten Teilen:
 
 - **Backend:** ASP.NET Core **REST API**
-- **Frontend:** **Blazor Server** Anwendu
+- **Frontend:** **Blazor Server** Anwendung
