@@ -13,7 +13,7 @@ Das Projekt besteht aus zwei klar getrennten Teilen:
 - **Dependency Injection (DI)** – Saubere Entkopplung der Services
 - **Repository Pattern** – Strukturierte Datenzugriffsschicht
 - **LINQ** – Datenabfragen und Aggregationen
-- **SQL Server / SQLite** – Persistenzschicht
+- **SQL Server – Persistenzschicht
 - **Data Transfer Objects (DTOs)** – Klare API‑Verträge
 
 ### 🔹 Frontend (Blazor)
